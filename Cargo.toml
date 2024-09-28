@@ -1,6 +1,6 @@
-[package]
-name = "ocs-ctrl"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
+[workspace]
+members = [
+    "ocs-node",
+    "ocs-node-controller",
+    "ocs-node-server"
+]

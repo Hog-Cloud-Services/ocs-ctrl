@@ -1,0 +1,7 @@
+[package]
+name = "ocs-node"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ocs-node-server = {path = "../ocs-node-server"}

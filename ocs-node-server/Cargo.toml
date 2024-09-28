@@ -1,0 +1,7 @@
+[package]
+name = "ocs-node-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ocs-node-controller = {path = "../ocs-node-controller"}

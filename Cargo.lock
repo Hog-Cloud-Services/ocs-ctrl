@@ -3,5 +3,19 @@
 version = 3
 
 [[package]]
-name = "ocs-ctrl"
+name = "ocs-node"
 version = "0.1.0"
+dependencies = [
+ "ocs-node-server",
+]
+
+[[package]]
+name = "ocs-node-controller"
+version = "0.1.0"
+
+[[package]]
+name = "ocs-node-server"
+version = "0.1.0"
+dependencies = [
+ "ocs-node-controller",
+]

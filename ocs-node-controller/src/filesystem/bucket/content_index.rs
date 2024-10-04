@@ -1,13 +1,11 @@
-use std::path::PathBuf;
-
-use rustc_hash::{FxHashMap, FxHashSet};
+use std::{collections::{BTreeMap, BTreeSet}, path::PathBuf};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 #[derive(Serialize, Deserialize)]
 pub struct BucketContentIndex {
-    files: FxHashSet<String>,
-    subdirs: FxHashMap<String, Box<BucketContentIndex>>,
+    files: BTreeSet<String>,
+    subdirs: BTreeMap<String, Box<BucketContentIndex>>,
     own_checksum: Vec<u8>
 }
 
@@ -56,7 +54,7 @@ impl BucketContentIndex {
     }
 
     pub fn new() -> Self {
-        return BucketContentIndex { files: FxHashSet::default(), subdirs: FxHashMap::default(), own_checksum: Vec::new()}
+        return BucketContentIndex { files: BTreeSet::new(), subdirs: BTreeMap::new(), own_checksum: Vec::new()}
     }
 
     pub fn add_file(&mut self, name: &PathBuf) {
@@ -75,8 +73,13 @@ impl BucketContentIndex {
             self.files.remove(name.to_str().unwrap());
         } else {
             let (child_path, subdirectory) = self.strip_oldest_dir(name).unwrap();
-            let child_index = self.subdirs.entry(subdirectory).or_insert(Box::new(BucketContentIndex::new()));
-            child_index.remove_file(&child_path);
+            let child_index = self.subdirs.get_mut(&subdirectory);
+            if let Some(child) = child_index {
+                child.remove_file(&child_path);
+                if child.subdirs.is_empty() {
+                    self.subdirs.remove(&subdirectory);
+                }
+            }
         }
         self.recalculate_checksum();
     }

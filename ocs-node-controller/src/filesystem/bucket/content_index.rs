@@ -32,12 +32,13 @@ impl BucketContentIndex {
             })
             .reduce(|acc, e| {
                 acc.iter()
-                    .zip(e.iter())   
+                    .zip(e)   
                     .map(|(a, b)| {
                         a^b
                     })
                     .collect()
             });
+        dbg!(&child_sum);
         let own_sum = self.files.iter()
             .map(|e| {
                 e.as_bytes().to_vec()
@@ -50,7 +51,7 @@ impl BucketContentIndex {
                     })
                     .collect()
             });
-        self.own_checksum = self.calculate_hash(&child_sum.unwrap_or_default(), &own_sum.unwrap());
+        self.own_checksum = self.calculate_hash(&child_sum.unwrap_or_default(), &own_sum.unwrap_or_default());
         dbg!(&self.own_checksum);
     }
 
@@ -64,7 +65,7 @@ impl BucketContentIndex {
         } else {
             let (child_path, subdirectory) = self.strip_oldest_dir(name).unwrap();
             let child_index = self.subdirs.entry(subdirectory).or_insert(Box::new(BucketContentIndex::new()));
-            return child_index.add_file(&child_path);
+            child_index.add_file(&child_path);
         }
         self.recalculate_checksum();
     }
@@ -75,7 +76,7 @@ impl BucketContentIndex {
         } else {
             let (child_path, subdirectory) = self.strip_oldest_dir(name).unwrap();
             let child_index = self.subdirs.entry(subdirectory).or_insert(Box::new(BucketContentIndex::new()));
-            return child_index.remove_file(&child_path);
+            child_index.remove_file(&child_path);
         }
         self.recalculate_checksum();
     }
